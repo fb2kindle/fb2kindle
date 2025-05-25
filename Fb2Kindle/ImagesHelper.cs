@@ -30,7 +30,7 @@ namespace Fb2Kindle {
       Stream imageStream = new MemoryStream();
       if (fast) {
         using (var bmp = new Bitmap(img)) {
-          var gsBmp = ImagesHelper.MakeGrayscale3(bmp);
+          var gsBmp = MakeGrayscale3(bmp);
           gsBmp.Save(imageStream, format);
         }
       }
@@ -82,7 +82,7 @@ namespace Fb2Kindle {
       var imgFormat = ImageFormat.Png;
       using (var img = Image.FromFile(coverFilePath)) {
         if (img.Size.Width < width && img.Size.Height < height) {
-          imgFormat = ImagesHelper.GetImageFormatFromMimeType(ImagesHelper.GetMimeType(img), ImageFormat.Png);
+          imgFormat = GetImageFormatFromMimeType(GetMimeType(img), ImageFormat.Png);
           scaledImage = ResizeImage(img, 600, 800);
         }
       }
