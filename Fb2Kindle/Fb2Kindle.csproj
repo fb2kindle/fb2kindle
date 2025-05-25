@@ -22,8 +22,8 @@
     <EmbeddedResource Include="kindlegen.exe" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
-    <Compile Include="..\..\common\Updater.cs" Link="Common\Updater.cs" />
+    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
+    <Compile Include="..\..\common\sergiye.Common\Updater.cs" Link="Common\Updater.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
