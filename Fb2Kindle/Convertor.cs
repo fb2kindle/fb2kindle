@@ -75,61 +75,91 @@ namespace Fb2Kindle {
 
         var coverDone = false;
         TocItem rootToc = null;
+        var sequenceIndex = 0;
         for (var idx = 0; idx < books.Count; idx++) {
-          var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(books[idx]);
-          if (fileNameWithoutExtension != null) {
-            var fileName = fileNameWithoutExtension.Trim();
-            Util.WriteLine("Processing: " + fileName);
-            var book = LoadBookWithoutNs(books[idx]);
-            if (book == null) return false;
-
-            if (idx == 0) {
-              options.TargetName = fileName;
-              //create instances
-              opfFile = GetEmptyPackage(book, books.Count > 1);
-              AddPackItem("ncx", "toc.ncx", "application/x-dtbncx+xml", false);
-            }
-
-            var bookPostfix = idx == 0 ? "" : $"_{idx}";
-
-            //update images (extract and rewrite refs)
-            Directory.CreateDirectory($"{options.TempFolder}\\Images");
-            if (ProcessImages(book, $"Images\\{bookPostfix}", coverDone)) {
-              var imgSrc = Util.AttributeValue(book.Elements("description").Elements("title-info").Elements("coverpage").Elements("div").Elements("img"), "src");
-              if (!string.IsNullOrEmpty(imgSrc)) {
-                ImagesHelper.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc));
-                if (!coverDone) {
-                  opfFile.Elements("metadata").First().Elements("x-metadata").First().Add(new XElement("EmbeddedCover", imgSrc));
-                  AddGuideItem("Cover", imgSrc, "other.ms-coverimage-standard");
-                  AddPackItem("cover", imgSrc, System.Net.Mime.MediaTypeNames.Image.Jpeg, false);
-                  coverDone = true;
-                }
-                else {
-                  AddGuideItem($"Cover{bookPostfix}", imgSrc);
-                  AddPackItem($"Cover{bookPostfix}", imgSrc, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+          var fileName = Path.GetFileNameWithoutExtension(books[idx]).Trim();
+          if (fileName == null)
+            continue;
+          
+          Util.WriteLine("Processing: " + fileName);
+          var fileExtension = Path.GetExtension(books[idx]);
+          switch (fileExtension.ToLower()) {
+            case ".zip":
+              var zipFileIndex = 0;
+              using (var zip = ZipFile.OpenRead(books[idx])) {
+                foreach (var zipEntry in zip.Entries) {
+                  var zipEntryFileExtension = Path.GetExtension(zipEntry.Name)?.ToLower();
+                  if (!".fb2".Equals(zipEntryFileExtension))
+                    continue;
+                  var unzippedFileName = zipFileIndex == 0 
+                    ? Util.GetValidFileName($"{fileName}{zipEntryFileExtension}")
+                    : Util.GetValidFileName($"{fileName}_{zipFileIndex}{zipEntryFileExtension}");
+                  var unzippedPath = Path.Combine(options.TempFolder, unzippedFileName);
+                  zipEntry.ExtractToFile(unzippedPath);
+                  books.Add(unzippedPath);
+                  zipFileIndex++;
                 }
               }
-            }
-
-            //book root element to contain all the sections
-            var bookFileName = $"book{bookPostfix}.html";
-            var bookRoot = new XElement("div");
-            //add title
-            bookRoot.Add(CreateTitlePage(book));
-            if (idx == 0)
-              AddGuideItem("Title", bookFileName, "start");
-            AddPackItem("it" + bookPostfix, bookFileName);
-            var bookTitle = GetTitle(book);
-            //add to TOC
-            if (rootToc == null)
-              rootToc = new TocItem(bookTitle, null);
-            var tocItem = rootToc.Add(bookTitle, bookFileName);
-            ProcessAllData(book, bookRoot, bookPostfix, tocItem, bookFileName);
-            ConvertTagsToHtml(bookRoot, true);
-            SaveAsHtmlBook(bookRoot, $"{options.TempFolder}\\{bookFileName}", bookTitle);
+              continue;
+            case ".fb2":
+              break;
+            default:
+              Util.WriteLine("Not supported file format: " + fileExtension, ConsoleColor.Red);
+              continue;
           }
+
+          var book = LoadBookWithoutNs(books[idx]);
+          if (book == null) return false;
+
+          if (sequenceIndex == 0) {
+            options.TargetName = fileName;
+            //create instances
+            opfFile = GetEmptyPackage(book, books.Count > 1);
+            AddPackItem("ncx", "toc.ncx", "application/x-dtbncx+xml", false);
+          }
+
+          var bookPostfix = sequenceIndex == 0 ? "" : $"_{sequenceIndex}";
+
+          //update images (extract and rewrite refs)
+          Directory.CreateDirectory($"{options.TempFolder}\\Images");
+          if (ProcessImages(book, $"Images\\{bookPostfix}", coverDone)) {
+            var imgSrc = Util.AttributeValue(book.Elements("description").Elements("title-info").Elements("coverpage").Elements("div").Elements("img"), "src");
+            if (!string.IsNullOrEmpty(imgSrc)) {
+              ImagesHelper.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc));
+              if (!coverDone) {
+                opfFile.Elements("metadata").First().Elements("x-metadata").First().Add(new XElement("EmbeddedCover", imgSrc));
+                AddGuideItem("Cover", imgSrc, "other.ms-coverimage-standard");
+                AddPackItem("cover", imgSrc, System.Net.Mime.MediaTypeNames.Image.Jpeg, false);
+                coverDone = true;
+              }
+              else {
+                AddGuideItem($"Cover{bookPostfix}", imgSrc);
+                AddPackItem($"Cover{bookPostfix}", imgSrc, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+              }
+            }
+          }
+
+          //book root element to contain all the sections
+          var bookFileName = $"book{bookPostfix}.html";
+          var bookRoot = new XElement("div");
+          //add title
+          bookRoot.Add(CreateTitlePage(book));
+          if (sequenceIndex == 0)
+            AddGuideItem("Title", bookFileName, "start");
+          AddPackItem("it" + bookPostfix, bookFileName);
+          var bookTitle = GetTitle(book);
+          //add to TOC
+          if (rootToc == null)
+            rootToc = new TocItem(bookTitle, null);
+          var tocItem = rootToc.Add(bookTitle, bookFileName);
+          ProcessAllData(book, bookRoot, bookPostfix, tocItem, bookFileName);
+          ConvertTagsToHtml(bookRoot, true);
+          SaveAsHtmlBook(bookRoot, $"{options.TempFolder}\\{bookFileName}", bookTitle);
+          sequenceIndex++;
         }
 
+        if (sequenceIndex == 0)
+          return false;
         CreateNcxFile(rootToc);
 
         if (rootToc != null && !options.Config.SkipToc) {
