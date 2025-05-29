@@ -13,6 +13,7 @@
     <ApplicationIcon>Kindle.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>

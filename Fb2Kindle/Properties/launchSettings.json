@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Fb2Kindle": {
+      "commandName": "Project",
+      "commandLineArgs": "*.* -epub"
+    }
+  }
+}
