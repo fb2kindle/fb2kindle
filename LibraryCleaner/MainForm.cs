@@ -56,22 +56,22 @@ namespace LibraryCleaner {
         return;
       }
 
-      txtLog.AppendLine($"{DateTime.Now:T} - ", Color.LightGray, false);
+      txtLog.AppendLine($"{DateTime.Now:T} - ", Color.LightGray);
       switch (state) {
         case Cleaner.StateKind.Error:
-          txtLog.AppendLine(message, Color.Red);
+          txtLog.AppendLine(message, Color.Red, false);
           break;
         case Cleaner.StateKind.Warning:
-          txtLog.AppendLine(message, Color.Gold);
+          txtLog.AppendLine(message, Color.Gold, false);
           break;
         case Cleaner.StateKind.Message:
-          txtLog.AppendLine(message, Color.LimeGreen);
+          txtLog.AppendLine(message, Color.LimeGreen, false);
           break;
         case Cleaner.StateKind.Info:
-          txtLog.AppendLine(message, Color.CornflowerBlue);
+          txtLog.AppendLine(message, Color.CornflowerBlue, false);
           break;
         default:
-          txtLog.AppendLine(message, txtLog.ForeColor);
+          txtLog.AppendLine(message, txtLog.ForeColor, false);
           break;
       }
 
