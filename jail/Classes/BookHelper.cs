@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -141,6 +142,51 @@ namespace jail.Classes {
       result = Regex.Replace(book.XPathSelectElement("descendant::body").Value.Trim().Shorten(1024).Replace("\n", "<br/>"), @"\s+", " ")
         .Replace("<br/> <br/> ", "<br/>");
       File.WriteAllText(outputFile, result);
+      return result;
+    }
+
+    internal static string Value(IEnumerable<XElement> source, string defaultResult = null) {
+      var value = source.Select(element => element.Value).FirstOrDefault();
+      if (value == null || String.IsNullOrEmpty(value.Trim()))
+        return defaultResult;
+      return value.Trim();
+    }
+    
+    public class Fb2FileInfo {
+      public string Title { get; set; }
+      public string Authors { get; set; }
+      public string Annotation { get; set; }
+    }
+    
+    public static Fb2FileInfo GetBookDetails(string inputFilePath) {
+
+      var result = new Fb2FileInfo();
+      var book = LoadBookWithoutNs(inputFilePath);
+
+      result.Title = Value(book.Elements("description").Elements("title-info").Elements("book-title"), "");
+      
+      result.Authors = string.Empty;
+      var authors = book.Elements("description").Elements("title-info").Elements("author");
+      foreach (var ai in authors) {
+        var author = $"{Value(ai.Elements("last-name"))} {Value(ai.Elements("first-name"))} {Value(ai.Elements("middle-name"))}";
+        if (!string.IsNullOrWhiteSpace(author)) {
+          result.Authors += author.Trim();
+        }
+      }
+
+      var desc = book.XPathSelectElement("descendant::annotation");
+      if (desc != null) {
+        result.Annotation = desc.Value;
+      }
+      else {
+        //no annotation - get short part from body
+        var body = book.XPathSelectElement("descendant::body");
+        if (body != null) {
+          result.Annotation =Regex.Replace(body.Value.Trim().Shorten(1024).Replace("\n", "<br/>"), @"\s+", " ")
+            .Replace("<br/> <br/> ", "<br/>");
+        }
+      }
+
       return result;
     }
 
