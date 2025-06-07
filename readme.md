@@ -1,8 +1,9 @@
 # Fb2Kindle
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/fb2kindle/fb2kindle?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/fb2kindle/fb2kindle/total?style=for-the-badge&color=ff4f42)
-![GitHub last commit](https://img.shields.io/github/last-commit/fb2kindle/fb2kindle?style=for-the-badge&color=00AD00)
+[![Release](https://img.shields.io/github/v/release/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/fb2kindle/fb2kindle/total?color=ff4f42)](https://sergiye.github.io/github-release-stats/?username=fb2kindle&repository=fb2kindle&page=1&per_page=100)
+![Last commit](https://img.shields.io/github/last-commit/fb2kindle/fb2kindle?color=00AD00)
+
 
 *Fb2Kindle is a portable, open-source fb2 books converter into Amazon Kindle formats (mobi & epub).*
 
@@ -77,10 +78,21 @@ also you can check cmd script examples in archive here [other/scripts.7z](https:
 
 ----
 
+## How can I help improve it?
+The fb2kindle team welcomes feedback and contributions!<br/>
+You can check if it works properly on your PC. If you notice any inaccuracies, please send us a pull request. If you have any suggestions or improvements, don't hesitate to create an issue.
+
+Also, don't forget to star the repository to help other people find it.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=fb2kindle/fb2kindle&type=Date)](https://star-history.com/#fb2kindle/fb2kindle&Date)
+
+[![Stargazers repo roster for @fb2kindle/fb2kindle](https://reporoster.com/stars/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/stargazers)
+
+## Donate!
+Every [cup of coffee](https://patreon.com/SergiyE) you donate will help this app become better and let me know that this project is in demand.
+
 ## License
 
 This program is free software: you can redistribute it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
