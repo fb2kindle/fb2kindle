@@ -559,13 +559,13 @@ namespace jail.Controllers {
           BookHelper.ExtractZipFile(archPath, book.FileName, sourceFileName);
         }
 
-        var coverImagePath = Path.Combine(detailsFolder, "cover.jpg");
-        if (!System.IO.File.Exists(coverImagePath))
-          BookHelper.SaveCover(sourceFileName, coverImagePath);
-
         var annotationsPath = Path.Combine(detailsFolder, "annotation.txt");
-        if (string.IsNullOrWhiteSpace(book.Description))
-          book.Description = BookHelper.GetAnnotation(sourceFileName, annotationsPath);
+        var coverImagePath = Path.Combine(detailsFolder, "cover.jpg");
+        var annotation = BookHelper.GetBookDetails(sourceFileName, annotationsPath, coverImagePath);
+        if (string.IsNullOrWhiteSpace(book.Description)) {
+          book.Description = annotation;
+        }
+        
         ViewBag.Title = book.Title;
 
         return sourceFileName;

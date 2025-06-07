@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,25 +12,25 @@ using jail.Models;
 namespace jail.Classes {
   public static class BookHelper {
     public static string Transliterate(this string str) {
-      string[] lat_up = {
+      string[] latUp = {
         "A", "B", "V", "G", "D", "E", "Yo", "Zh", "Z", "I", "Y", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F",
         "Kh", "Ts", "Ch", "Sh", "Shch", "\"", "Y", "'", "E", "Yu", "Ya"
       };
-      string[] lat_low = {
+      string[] latLow = {
         "a", "b", "v", "g", "d", "e", "yo", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f",
         "kh", "ts", "ch", "sh", "shch", "\"", "y", "'", "e", "yu", "ya"
       };
-      string[] rus_up = {
+      string[] rusUp = {
         "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф",
         "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я"
       };
-      string[] rus_low = {
+      string[] rusLow = {
         "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
         "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"
       };
-      for (int i = 0; i <= 32; i++) {
-        str = str.Replace(rus_up[i], lat_up[i]);
-        str = str.Replace(rus_low[i], lat_low[i]);
+      for (var i = 0; i <= 32; i++) {
+        str = str.Replace(rusUp[i], latUp[i]);
+        str = str.Replace(rusLow[i], latLow[i]);
       }
 
       return str;
@@ -63,7 +62,7 @@ namespace jail.Classes {
       return name;
     }
 
-    internal static XElement LoadBookWithoutNs(string bookPath) {
+    private static XElement LoadBookWithoutNs(string bookPath) {
       try {
         XElement book;
         //book = XDocument.Parse(File.ReadAllText(bookPath), LoadOptions.PreserveWhitespace).Root;
@@ -90,111 +89,101 @@ namespace jail.Classes {
       }
     }
 
-    public static string GetApplicationPath() {
-      return AppDomain.CurrentDomain.BaseDirectory;
-      // var asm = Assembly.GetExecutingAssembly();
-      // var directoryInfo = new FileInfo(asm.Location).Directory;
-      // return directoryInfo != null ? directoryInfo.FullName : Path.GetDirectoryName(asm.Location);
-    }
+    // public static string GetApplicationPath() {
+    //   return AppDomain.CurrentDomain.BaseDirectory;
+    //   // var asm = Assembly.GetExecutingAssembly();
+    //   // var directoryInfo = new FileInfo(asm.Location).Directory;
+    //   // return directoryInfo != null ? directoryInfo.FullName : Path.GetDirectoryName(asm.Location);
+    // }
 
-//        public static void ConvertPartial(string inputFile, string detailsFolder)
-//        {
-//            var conv = new Convertor(new DefaultOptions
-//            {
-//                CleanupMode = ConverterCleanupMode.Partial
-//            }, null, false);
-//            conv.ConvertBook(inputFile, detailsFolder);
-//        }
+    // private static string Value(IEnumerable<XElement> source, string defaultResult = null) {
+    //   var value = source.Select(element => element.Value).FirstOrDefault();
+    //   if (value == null || String.IsNullOrEmpty(value.Trim()))
+    //     return defaultResult;
+    //   return value.Trim();
+    // }
+    
+    // public class Fb2FileInfo {
+    //   public string Title { get; set; }
+    //   public string Authors { get; set; }
+    //   public string Annotation { get; set; }
+    // }
+    
+    public static string GetBookDetails(string inputFilePath, string annotationsFilePath, string coverFilePath) {
 
-    public static void SaveCover(string inputFile, string outputFile) {
-      var book = LoadBookWithoutNs(inputFile);
-      if (book == null) return;
-      var coverImage = book.Descendants("coverpage").Elements("image").FirstOrDefault();
-      if (coverImage != null) {
-        var coverPage = (string) coverImage.Attribute("href");
-        if (!string.IsNullOrWhiteSpace(coverPage)) {
-          var node = book.XPathSelectElement($"descendant::binary[@id='{coverPage.Replace("#", "")}']");
-          if (node != null) {
-            File.WriteAllBytes(outputFile, Convert.FromBase64String(node.Value));
-            return;
+      XElement book = null;
+
+      if (!string.IsNullOrEmpty(coverFilePath) && !File.Exists(coverFilePath)) {
+        var coverSaved = false;
+        book = LoadBookWithoutNs(inputFilePath);
+          
+        var coverImage = book.Descendants("coverpage").Elements("image").FirstOrDefault();
+        if (coverImage != null) {
+          var coverPage = (string) coverImage.Attribute("href");
+          if (!string.IsNullOrWhiteSpace(coverPage)) {
+            var node = book.XPathSelectElement($"descendant::binary[@id='{coverPage.Replace("#", "")}']");
+            if (node != null) {
+              File.WriteAllBytes(coverFilePath, Convert.FromBase64String(node.Value));
+              coverSaved = true;
+            }
+          }
+        }
+        if (!coverSaved) {
+          foreach (var binEl in book.Elements("binary")) {
+            File.WriteAllBytes(coverFilePath, Convert.FromBase64String(binEl.Value));
+            break;
           }
         }
       }
 
-      foreach (var binEl in book.Elements("binary")) {
-        File.WriteAllBytes(outputFile, Convert.FromBase64String(binEl.Value));
-        return;
-      }
-    }
-
-    public static string GetAnnotation(string inputFile, string outputFile) {
-      if (File.Exists(outputFile))
-        return File.ReadAllText(outputFile);
-      string result;
-      var book = LoadBookWithoutNs(inputFile);
-      var desc = book.XPathSelectElement("descendant::annotation");
-      if (desc != null) {
-        result = desc.Value;
-        File.WriteAllText(outputFile, result);
-        return result;
-      }
-
-      result = Regex.Replace(book.XPathSelectElement("descendant::body").Value.Trim().Shorten(1024).Replace("\n", "<br/>"), @"\s+", " ")
-        .Replace("<br/> <br/> ", "<br/>");
-      File.WriteAllText(outputFile, result);
-      return result;
-    }
-
-    internal static string Value(IEnumerable<XElement> source, string defaultResult = null) {
-      var value = source.Select(element => element.Value).FirstOrDefault();
-      if (value == null || String.IsNullOrEmpty(value.Trim()))
-        return defaultResult;
-      return value.Trim();
-    }
-    
-    public class Fb2FileInfo {
-      public string Title { get; set; }
-      public string Authors { get; set; }
-      public string Annotation { get; set; }
-    }
-    
-    public static Fb2FileInfo GetBookDetails(string inputFilePath) {
-
-      var result = new Fb2FileInfo();
-      var book = LoadBookWithoutNs(inputFilePath);
-
-      result.Title = Value(book.Elements("description").Elements("title-info").Elements("book-title"), "");
-      
-      result.Authors = string.Empty;
-      var authors = book.Elements("description").Elements("title-info").Elements("author");
-      foreach (var ai in authors) {
-        var author = $"{Value(ai.Elements("last-name"))} {Value(ai.Elements("first-name"))} {Value(ai.Elements("middle-name"))}";
-        if (!string.IsNullOrWhiteSpace(author)) {
-          result.Authors += author.Trim();
-        }
-      }
-
-      var desc = book.XPathSelectElement("descendant::annotation");
-      if (desc != null) {
-        result.Annotation = desc.Value;
+      string annotation = null;
+      if (!string.IsNullOrEmpty(annotationsFilePath) && File.Exists(annotationsFilePath)) {
+        annotation = File.ReadAllText(annotationsFilePath);
       }
       else {
-        //no annotation - get short part from body
-        var body = book.XPathSelectElement("descendant::body");
-        if (body != null) {
-          result.Annotation =Regex.Replace(body.Value.Trim().Shorten(1024).Replace("\n", "<br/>"), @"\s+", " ")
-            .Replace("<br/> <br/> ", "<br/>");
+        if (book == null)
+          book = LoadBookWithoutNs(inputFilePath);
+        var desc = book.XPathSelectElement("descendant::annotation");
+        if (desc != null) {
+          annotation = desc.Value;
         }
+        else {
+          // no annotation - get short part from body
+          var body = book.XPathSelectElement("descendant::body");
+          if (body != null) {
+            annotation = Regex.Replace(body.Value.Trim().Shorten(1024).Replace("\n", "<br/>"), @"\s+", " ")
+              .Replace("<br/> <br/> ", "<br/>");
+          }
+        }
+
+        if (!string.IsNullOrEmpty(annotationsFilePath))
+          File.WriteAllText(annotationsFilePath, annotation);
       }
 
-      return result;
+      // if (book == null)
+      //   book = LoadBookWithoutNs(inputFilePath);
+      // var result = new Fb2FileInfo {
+      //   Annotation = annotation,
+      //   Title = Value(book.Elements("description").Elements("title-info").Elements("book-title"), ""),
+      //   Authors = string.Empty
+      // };
+      // var authors = book.Elements("description").Elements("title-info").Elements("author");
+      // foreach (var ai in authors) {
+      //   var author = $"{Value(ai.Elements("last-name"))} {Value(ai.Elements("first-name"))} {Value(ai.Elements("middle-name"))}";
+      //   if (!string.IsNullOrWhiteSpace(author)) {
+      //     result.Authors += author.Trim();
+      //   }
+      // }
+
+      return annotation;
     }
 
     public static void Transform(string inputFile, string outputFile, string xsl) {
       using (var reader = new XmlTextReader(inputFile)) {
         var xslt = new XslCompiledTransform();
         xslt.Load(xsl);
-        using (var writer = new XmlTextWriter(outputFile, null) {Formatting = Formatting.Indented}) {
+        using (var writer = new XmlTextWriter(outputFile, null)) {
+          writer.Formatting = Formatting.Indented;
           xslt.Transform(reader, null, writer, null);
           writer.Close();
         }
