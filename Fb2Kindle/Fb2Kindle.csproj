@@ -8,8 +8,6 @@
     <Deterministic>false</Deterministic>
     <LangVersion>latest</LangVersion>
     <DefineConstants>NOWINFORMS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Kindle.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
@@ -18,8 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Fb2Kindle.css" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="kindlegen.exe" />
   </ItemGroup>
   <ItemGroup>
@@ -29,11 +25,6 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
     <Content Include="Kindle.ico" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
-    <Content Include="obfuscar.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
@@ -45,17 +36,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Obfuscar">
-      <Version>2.2.48</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="XmlSerializerHelper.cs" />
-  </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>if '$(Configuration)' == 'Release' $(Obfuscar) obfuscar.xml</PostBuildEvent>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
 </Project>
