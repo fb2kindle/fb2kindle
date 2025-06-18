@@ -38,6 +38,7 @@ namespace Fb2Kindle {
 
     private const string DropCap = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧЩШЭЮЯ"; //"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЩШЬЪЫЭЮЯQWERTYUIOPASDFGHJKLZXCVBNM";
     private const string NoAuthorText = "без автора";
+    private const string kindlegenName = "kindlegen.exe";
     private XElement opfFile;
     private readonly AppOptions options;
 
@@ -206,7 +207,7 @@ namespace Fb2Kindle {
                 break;
               case ConverterCleanupMode.Partial:
                 //File.Delete(Path.Combine(tempDir, Path.GetFileNameWithoutExtension(inputFile) + ".opf"));
-                File.Delete(Path.Combine(options.TempFolder, "kindlegen.exe"));
+                File.Delete(Path.Combine(options.TempFolder, kindlegenName));
 
                 //for Partial mode UseSourceAsTempFolder is always true 
                 // var destFolder = GetVersionedPath(Path.GetDirectoryName(bookPath) +"\\" + bookName);
@@ -446,11 +447,11 @@ namespace Fb2Kindle {
     private string CreateMobi() {
 
       Util.WriteLine("Creating mobi (KF8)...", ConsoleColor.White);
-      var kindleGenPath = $"{options.AppPath}\\kindlegen.exe";
+      var kindleGenPath = $"{options.AppPath}\\{kindlegenName}";
       if (!File.Exists(kindleGenPath)) {
-        kindleGenPath = $"{options.TempFolder}\\kindlegen.exe";
-        if (!Util.GetFileFromResource("kindlegen.exe", kindleGenPath)) {
-          Util.WriteLine("kindlegen.exe not found", ConsoleColor.Red);
+        kindleGenPath = $"{options.TempFolder}\\{kindlegenName}";
+        if (!Util.GetFileFromResource(kindlegenName, kindleGenPath)) {
+          Util.WriteLine($"{kindlegenName} not found", ConsoleColor.Red);
           return null;
         }
       }
