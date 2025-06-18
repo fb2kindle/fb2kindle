@@ -9,7 +9,7 @@
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Deterministic>false</Deterministic>
-    <ApplicationIcon>Book.ico</ApplicationIcon>
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
@@ -26,7 +26,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Book.ico" />
+    <Content Include="app.ico" />
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
