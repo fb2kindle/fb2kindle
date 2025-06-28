@@ -354,7 +354,7 @@
       this.ClientSize = new System.Drawing.Size(792, 351);
       this.Controls.Add(this.panLog);
       this.Controls.Add(this.tabControlConfig);
-      this.MinimumSize = new System.Drawing.Size(800, 300);
+      this.MinimumSize = new System.Drawing.Size(800, 400);
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Library Cleaner";

@@ -22,15 +22,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\sergiye.Common.UI\SimplTextBox.cs" Link="Common\SimplTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="app.ico" />
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="sergiye.Common.UI" Version="1.*" />
     <PackageReference Include="Costura.Fody">
       <Version>4.1.0</Version>
       <PrivateAssets>all</PrivateAssets>

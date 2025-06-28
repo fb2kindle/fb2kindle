@@ -19,14 +19,11 @@
     <EmbeddedResource Include="kindlegen.exe" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
-    <Compile Include="..\..\common\sergiye.Common\Updater.cs" Link="Common\Updater.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="FodyWeavers.xml" />
     <Content Include="Kindle.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="sergiye.Common" Version="1.*" />
     <PackageReference Include="Costura.Fody">
       <Version>4.1.0</Version>
       <PrivateAssets>all</PrivateAssets>
