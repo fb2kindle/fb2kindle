@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCleaner", "LibraryCl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jail", "jail\jail.csproj", "{2DFC0BE0-D46D-4CD1-BA9F-505E7B2744E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrettyXml", "other\PrettyXml\PrettyXml.csproj", "{8ED33F24-618B-42CB-B75B-727BEC7419D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2DFC0BE0-D46D-4CD1-BA9F-505E7B2744E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DFC0BE0-D46D-4CD1-BA9F-505E7B2744E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DFC0BE0-D46D-4CD1-BA9F-505E7B2744E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ED33F24-618B-42CB-B75B-727BEC7419D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ED33F24-618B-42CB-B75B-727BEC7419D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ED33F24-618B-42CB-B75B-727BEC7419D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ED33F24-618B-42CB-B75B-727BEC7419D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

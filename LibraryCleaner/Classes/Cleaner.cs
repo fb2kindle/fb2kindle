@@ -518,13 +518,6 @@ delete from fts_book where docid not in (select DISTINCT id FROM books);");
             wc.DownloadFile("http://flibusta.is/sql/lib.md5.txt.gz", downloadedFilePath);
           if (File.Exists(downloadedFilePath))
             try {
-
-              // Process.Start(new ProcessStartInfo("7za", "e lib.md5.txt.gz") {
-              //   CreateNoWindow = true,
-              //   UseShellExecute = false,
-              //   WorkingDirectory = appPath
-              // })?.WaitForExit();
-
               using (var originalFileStream = File.OpenRead(downloadedFilePath)) {
                 using (var decompressedFileStream = File.Create(appPath + "\\lib.md5.txt")) {
                   using (var decompressionStream = new GZipStream(originalFileStream, CompressionMode.Decompress)) {
@@ -532,7 +525,6 @@ delete from fts_book where docid not in (select DISTINCT id FROM books);");
                   }
                 }
               }
-
               deleteFileWithDeletedBooksIds = true;
             }
             finally {
