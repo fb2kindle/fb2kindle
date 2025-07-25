@@ -250,7 +250,7 @@ namespace Fb2Kindle {
           (message, isError) => { Console.WriteLine(message); },
           (message) => { Console.WriteLine(message); return true; }
         );
-        Console.WriteLine("\nChecking for an apdated version...");
+        Console.WriteLine("\nChecking for updates...");
         Updater.CheckForUpdates(false);
       }
     }

@@ -84,10 +84,6 @@ You can check if it works properly on your PC. If you notice any inaccuracies, p
 
 Also, don't forget to star the repository to help other people find it.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=fb2kindle/fb2kindle&type=Date)](https://star-history.com/#fb2kindle/fb2kindle&Date)
-
-[![Stargazers repo roster for @fb2kindle/fb2kindle](https://reporoster.com/stars/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/stargazers)
-
 ## Donate!
 Every [cup of coffee](https://patreon.com/SergiyE) you donate will help this app become better and let me know that this project is in demand.
 
