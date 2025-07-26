@@ -8,6 +8,12 @@
 *Fb2Kindle is a portable, open-source fb2 books converter into Amazon Kindle formats (mobi & epub).*
 
 ----
+## What does it look like?
+
+Here's a preview of the app's explorer integration (context menu) on Windows 10:
+
+[<img src="https://github.com/fb2kindle/fb2kindle/raw/master/preview.png" alt="preview"/>](https://github.com/fb2kindle/fb2kindle/raw/master/preview.png)
+
 
 ## Download Latest Version
 
