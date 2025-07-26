@@ -5,6 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ComVisible>true</ComVisible>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Common\sergiye.snk</AssemblyOriginatorKeyFile>
     <Deterministic>false</Deterministic>

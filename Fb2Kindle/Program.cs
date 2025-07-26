@@ -1,4 +1,5 @@
-﻿using sergiye.Common;
+﻿using Microsoft.Win32;
+using sergiye.Common;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -23,6 +24,8 @@ namespace Fb2Kindle {
       Util.WriteLine("\t-w: wait for key press on finish");
       Util.WriteLine("\t-mailto <user@mail.org>: send document to email (kindle send-by-email delivery, see `-save` option to configure SMTP server)");
       Util.WriteLine($"\t-save: save parameters (listed below) to be used at the next start (`{Updater.ApplicationName}.json` file)");
+      Util.WriteLine($"\t-register: add explorer integration (context menu & thumbnails)");
+      Util.WriteLine($"\t-unregister: remove explorer integration");
       // Util.WriteLine("\t-preview: keep generated source files");
       // Util.WriteLine("\t-debug: keep all generated files");
       Util.WriteLine();
@@ -51,6 +54,98 @@ namespace Fb2Kindle {
       Util.WriteLine();
     }
 
+    private static void Register(string exePath) {
+      
+      Unregister(true);
+      
+      var fileExtension = ".fb2";
+      //string baseKey = $@"SystemFileAssociations\{fileExtension}\shell\Fb2Kindle";
+      //using (var mainKey = Registry.ClassesRoot.CreateSubKey(baseKey)) {
+      //  //mainKey.SetValue("", "Fb2Kindle");
+      //  mainKey.SetValue("MUIVerb", "Fb2Kindle");
+      //  mainKey.SetValue("Icon", exePath);
+      //  mainKey.SetValue("subcommands", "");
+      //}
+      //using (var subShell = Registry.ClassesRoot.CreateSubKey(baseKey + @"\shell")) {
+      //  using (var key = subShell.CreateSubKey("a_convert_mobi")) {
+      //    key.SetValue("", "Convert to .mobi");
+      //    //0x08	Entry is a separator. Consecutive separators are collapsed into a single separator
+      //    //0x10  Shows a UAC shield next to the menu item
+      //    //0x20  Show a separator above this item
+      //    //0x40  Show a separator below this item
+      //    //mobiKey.SetValue("CommandFlags", 0x00000040);
+      //    using (var cmdKey = key.CreateSubKey("command")) {
+      //      cmdKey.SetValue("", $"\"{exePath}\" \"%1\"");
+      //    }
+      //  }
+      //  using (var key = subShell.CreateSubKey("b_convert_epub")) {
+      //    key.SetValue("", "Convert to .epub");
+      //    using (var cmdKey = key.CreateSubKey("command")) {
+      //      cmdKey.SetValue("", $"\"{exePath}\" \"%1\" -epub");
+      //    }
+      //  }
+      //}
+
+      string fileType = Registry.GetValue($@"HKEY_CLASSES_ROOT\{fileExtension}", "", null) as string;
+      if (string.IsNullOrEmpty(fileType)) {
+        fileType = fileExtension.TrimStart('.') + "_auto_file";
+        Registry.SetValue($@"HKEY_CLASSES_ROOT\{fileExtension}", "", fileType);
+      }
+
+      static void AddSubItems(RegistryKey key, string baseCommand) {
+        using (var subKey = key.CreateSubKey(@"shell\convert_epub")) {
+          subKey.SetValue("", "Convert to .epub");
+          using (var cmdKey = subKey.CreateSubKey("command")) {
+            cmdKey.SetValue("", $"{baseCommand} -epub");
+          }
+        }
+        using (var subKey = key.CreateSubKey(@"shell\convert_mobi")) {
+          subKey.SetValue("", "Convert to .mobi");
+          using (var cmdKey = subKey.CreateSubKey("command")) {
+            cmdKey.SetValue("", baseCommand);
+          }
+        }
+      }
+
+      using (var key = Registry.ClassesRoot.CreateSubKey($@"{fileType}\shell\Fb2Kindle")) {
+        key.SetValue("MUIVerb", "Fb2Kindle");
+        key.SetValue("Icon", exePath);
+        key.SetValue("SubCommands", "");
+        AddSubItems(key, $"\"{exePath}\" \"%1\"");
+      }
+      using (var key = Registry.ClassesRoot.CreateSubKey(@"Directory\shell\Fb2Kindle")) {
+        key.SetValue("MUIVerb", "Fb2Kindle");
+        key.SetValue("Icon", exePath);
+        key.SetValue("SubCommands", "");
+        AddSubItems(key, $"\"{exePath}\" \"%1\\*.fb2\" -r -j");
+      }
+
+      Util.WriteLine("Context menus successfully added.", ConsoleColor.Green);
+    }
+
+    static void Unregister(bool silent = false) {
+      try {
+        string fileExtension = ".fb2";
+        string fileType = Registry.GetValue($@"HKEY_CLASSES_ROOT\{fileExtension}", "", null) as string;
+        if (string.IsNullOrEmpty(fileType))
+          fileType = fileExtension.TrimStart('.') + "_auto_file";
+
+        //Registry.ClassesRoot.DeleteSubKeyTree($@"SystemFileAssociations\{fileType}\shell\Fb2Kindle", false);
+        //Registry.LocalMachine.DeleteSubKeyTree($@"SOFTWARE\Classes\SystemFileAssociations\{fileType}\shell\Fb2Kindle", false);
+        //Registry.LocalMachine.DeleteSubKeyTree($@"SOFTWARE\Classes\SystemFileAssociations\{fileExtension}\shell\Fb2Kindle", false);
+        
+        Registry.ClassesRoot.DeleteSubKeyTree($@"{fileType}\shell\Fb2Kindle", false);
+        Registry.ClassesRoot.DeleteSubKeyTree(@"Directory\shell\Fb2Kindle", false);
+
+        if (!silent)
+          Util.WriteLine("Context menus successfully removed.", ConsoleColor.Green);
+      }
+      catch (Exception ex) {
+        if (!silent)
+          Util.WriteLine("Error while removing context menus: " + ex.Message, ConsoleColor.Red);
+      }
+    }
+
     [STAThread]
     public static void Main(string[] args) {
       const string allBooksPattern = "*.fb2";
@@ -75,7 +170,13 @@ namespace Fb2Kindle {
 
         if (args.Length == 0) {
           ShowHelpText();
-          Util.Write("Process all local files (-a) recursively (-r) with default parameters?\nPress 'Enter' to continue, or any other key to exit...", ConsoleColor.White);
+          Util.WriteLine("\nDo you want to integrate this app with Windows Explorer (add context menu and thumbnails)?", ConsoleColor.DarkCyan);
+          Util.WriteLine("Press Enter to confirm, or any other key to skip...", ConsoleColor.DarkYellow);
+          if (Console.ReadKey().Key == ConsoleKey.Enter) {
+            Register(Updater.CurrentFileLocation);
+          }
+          Util.WriteLine("\nDo you want to process all local files recursively using default settings?", ConsoleColor.DarkCyan);
+          Util.WriteLine("Press Enter to continue, or any other key to exit...", ConsoleColor.DarkYellow);
           if (Console.ReadKey().Key != ConsoleKey.Enter)
             return;
           wait = true;
@@ -95,6 +196,14 @@ namespace Fb2Kindle {
             }
             //Console.WriteLine($"Executing external with parameters: '{parameters}'...");
             Process.Start(Updater.CurrentFileLocation, parameters);
+            return;
+          }
+          else if (args[0] == "register") {
+            Register(Updater.CurrentFileLocation);
+            return;
+          }
+          else if (args[0] == "unregister") {
+            Unregister();
             return;
           }
 
