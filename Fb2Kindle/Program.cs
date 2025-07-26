@@ -24,7 +24,7 @@ namespace Fb2Kindle {
       Util.WriteLine("\t-w: wait for key press on finish");
       Util.WriteLine("\t-mailto <user@mail.org>: send document to email (kindle send-by-email delivery, see `-save` option to configure SMTP server)");
       Util.WriteLine($"\t-save: save parameters (listed below) to be used at the next start (`{Updater.ApplicationName}.json` file)");
-      Util.WriteLine($"\t-register: add explorer integration (context menu & thumbnails)");
+      Util.WriteLine($"\t-register: add explorer integration (context menu)");
       Util.WriteLine($"\t-unregister: remove explorer integration");
       // Util.WriteLine("\t-preview: keep generated source files");
       // Util.WriteLine("\t-debug: keep all generated files");
@@ -170,7 +170,7 @@ namespace Fb2Kindle {
 
         if (args.Length == 0) {
           ShowHelpText();
-          Util.WriteLine("\nDo you want to integrate this app with Windows Explorer (add context menu and thumbnails)?", ConsoleColor.DarkCyan);
+          Util.WriteLine("\nDo you want to integrate this app with Windows Explorer (add context menu)?", ConsoleColor.DarkCyan);
           Util.WriteLine("Press Enter to confirm, or any other key to skip...", ConsoleColor.DarkYellow);
           if (Console.ReadKey().Key == ConsoleKey.Enter) {
             Register(Updater.CurrentFileLocation);
