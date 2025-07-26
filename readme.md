@@ -44,28 +44,28 @@ To use:
 
   Fb2Kindle.exe [options]
 
-  * `<path>`: input `.fb2` file path or files mask (ex: `*.fb2`) or path to `.fb2` files
-  * `-epub`: create file in epub format
-  * `-css` <styles.css>: styles used in destination book (example can be found here: [Fb2Kindle/Fb2Kindle.css](https://github.com/fb2kindle/fb2kindle/raw/master/Fb2Kindle/Fb2Kindle.css))
-  * `-a`: process all `.fb2` books in app folder
-  * `-r`: process files in subfolders (work with -a key)
-  * `-j`: join files from each folder to the single book
-  * `-o`: hide detailed output
-  * `-w`: wait for key press on finish
-  * `-mailto`: send document to email (kindle send-by-email delivery, see `-save` option to configure SMTP server)
-  * `-save`: save parameters (listed below) to be used at the next start (`Fb2Kindle.json` file)
-
-
-  * `-d`: delete source file after successful conversion
-  * `-u` or `-update`: update application to the latest version. You can combine it with the `-save` option to enable auto-update on every run
-  * `-s`: add sequence and number to the document title
-  * `-c` (same as `-c1`) or `-c2`: use compression (slow)
-  * `-ni`: no images
-  * `-dc`: DropCaps mode
-  * `-g`: grayscale images
-  * `-jpeg`: save images in jpeg
-  * `-ntoc`: no table of content
-  * `-nch`: no chapters
+  - `<path>`: input `.fb2` file path or files mask (ex: `*.fb2`) or path to `.fb2` files
+  - `-epub`: create file in epub format
+  - `-css` <styles.css>: styles used in destination book (example can be found here: [Fb2Kindle/Fb2Kindle.css](https://github.com/fb2kindle/fb2kindle/raw/master/Fb2Kindle/Fb2Kindle.css))
+  - `-a`: process all `.fb2` books in app folder
+  - `-r`: process files in subfolders (work with -a key)
+  - `-j`: join files from each folder to the single book
+  - `-o`: hide detailed output
+  - `-w`: wait for key press on finish
+  - `-mailto`: send document to email (kindle send-by-email delivery, see `-save` option to configure SMTP server)
+  - `-save`: save parameters (listed below) to be used at the next start (`Fb2Kindle.json` file)
+  - `-register`: add explorer integration (context menu)
+  - `-unregister`: remove explorer integration
+  - `-d`: delete source file after successful conversion
+  - `-u` or `-update`: update application to the latest version. You can combine it with the `-save` option to enable auto-update on every run
+  - `-s`: add sequence and number to the document title
+  - `-c` (same as `-c1`) or `-c2`: use compression (slow)
+  - `-ni`: no images
+  - `-dc`: DropCaps mode
+  - `-g`: grayscale images
+  - `-jpeg`: save images in jpeg
+  - `-ntoc`: no table of content
+  - `-nch`: no chapters
 
 ### Examples:
 
