@@ -66,6 +66,8 @@ To use:
   - `-u` or `-update`: update application to the latest version. You can combine it with the `-save` option to enable auto-update on every run
   - `-s`: add sequence and number to the document title
   - `-c` (same as `-c1`) or `-c2`: use compression (slow)
+  - `-optimizeSource`: optimize images in source file (decrease to 600x800 by default)
+  - `-optimize`: optimize images in target (decrease to 600x800 by default)
   - `-ni`: no images
   - `-dc`: DropCaps mode
   - `-g`: grayscale images

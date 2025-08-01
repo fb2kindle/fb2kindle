@@ -38,7 +38,7 @@ namespace Fb2Kindle {
 
     private const string DropCap = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧЩШЭЮЯ"; //"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЩШЬЪЫЭЮЯQWERTYUIOPASDFGHJKLZXCVBNM";
     private const string NoAuthorText = "без автора";
-    private const string kindlegenName = "kindlegen.exe";
+    private const string KindleGenName = "kindlegen.exe";
     private XElement opfFile;
     private readonly AppOptions options;
 
@@ -109,6 +109,17 @@ namespace Fb2Kindle {
               continue;
           }
 
+          if (options.OptimizeSource) {
+            XElement bookRaw;
+            using (Stream file = File.OpenRead(books[idx])) {
+              bookRaw = XElement.Load(file, LoadOptions.None);
+            }
+            if (bookRaw != null && OptimizeImages(bookRaw)) {
+               bookRaw.Save(books[idx], SaveOptions.None);
+            }
+            continue;
+          }
+
           var book = LoadBookWithoutNs(books[idx]);
           if (book == null) return false;
 
@@ -126,7 +137,7 @@ namespace Fb2Kindle {
           if (ProcessImages(book, $"Images\\{bookPostfix}", coverDone)) {
             var imgSrc = Util.AttributeValue(book.Elements("description").Elements("title-info").Elements("coverpage").Elements("div").Elements("img"), "src");
             if (!string.IsNullOrEmpty(imgSrc)) {
-              ImagesHelper.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc));
+              ImagesHelper.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc), true, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
               if (!coverDone) {
                 opfFile.Elements("metadata").First().Elements("x-metadata").First().Add(new XElement("EmbeddedCover", imgSrc));
                 AddGuideItem("Cover", imgSrc, "other.ms-coverimage-standard");
@@ -160,7 +171,7 @@ namespace Fb2Kindle {
         }
 
         if (sequenceIndex == 0)
-          return false;
+           return false;
         CreateNcxFile(rootToc);
 
         if (rootToc != null && !options.Config.SkipToc) {
@@ -170,6 +181,10 @@ namespace Fb2Kindle {
         }
 
         SaveXmlToFile(opfFile, $@"{options.TempFolder}\content.opf");
+        
+        if (options.Test)
+          return true;
+
         var tmpBookPath = options.Epub 
           ? CreateEpub() 
           : CreateMobi();
@@ -207,7 +222,7 @@ namespace Fb2Kindle {
                 break;
               case ConverterCleanupMode.Partial:
                 //File.Delete(Path.Combine(tempDir, Path.GetFileNameWithoutExtension(inputFile) + ".opf"));
-                File.Delete(Path.Combine(options.TempFolder, kindlegenName));
+                File.Delete(Path.Combine(options.TempFolder, KindleGenName));
 
                 //for Partial mode UseSourceAsTempFolder is always true 
                 // var destFolder = GetVersionedPath(Path.GetDirectoryName(bookPath) +"\\" + bookName);
@@ -447,11 +462,11 @@ namespace Fb2Kindle {
     private string CreateMobi() {
 
       Util.WriteLine("Creating mobi (KF8)...", ConsoleColor.White);
-      var kindleGenPath = $"{options.AppPath}\\{kindlegenName}";
+      var kindleGenPath = $"{options.AppPath}\\{KindleGenName}";
       if (!File.Exists(kindleGenPath)) {
-        kindleGenPath = $"{options.TempFolder}\\{kindlegenName}";
-        if (!Util.GetFileFromResource(kindlegenName, kindleGenPath)) {
-          Util.WriteLine($"{kindlegenName} not found", ConsoleColor.Red);
+        kindleGenPath = $"{options.TempFolder}\\{KindleGenName}";
+        if (!Util.GetFileFromResource(KindleGenName, kindleGenPath)) {
+          Util.WriteLine($"{KindleGenName} not found", ConsoleColor.Red);
           return null;
         }
       }
@@ -841,6 +856,10 @@ namespace Fb2Kindle {
                 img.Save(file, format);
               }
             }
+
+            if (options.Config.OptimizeImages)
+              ImagesHelper.AutoScaleImage(file, magnify: false, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
+
             if (options.Config.Grayscaled) {
               Image gsImage;
               using (var img = Image.FromFile(file)) {
@@ -862,6 +881,30 @@ namespace Fb2Kindle {
       return true;
     }
 
+    private bool OptimizeImages(XElement book) {
+      if (book == null) return false;
+      Util.Write("Optimizing source images...", ConsoleColor.White);
+      var hasChanges = false;
+      foreach (var binEl in book.Descendants().Where(e => e.Name.LocalName == "binary")) {
+        var imgId = binEl.Attribute("id")?.Value;
+        try {
+          var format = ImagesHelper.GetImageFormatFromMimeType(binEl.Attribute("content-type")?.Value, options.Config.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png);
+          //todo: we can get format from img.RawFormat
+          var imageBytes = Convert.FromBase64String(binEl.Value);
+          if (!ImagesHelper.AutoScaleImage(imageBytes, format, false,
+                options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight,
+                out var scaledBytes)) continue;
+          binEl.Value = Convert.ToBase64String(scaledBytes);
+          hasChanges = true;
+        }
+        catch (Exception ex) {
+          Util.WriteLine($"Error processing image '{imgId}': " + ex.Message, ConsoleColor.Red);
+        }
+      }
+       Util.WriteLine("(OK)", ConsoleColor.Green);
+      return hasChanges;
+    }
+    
     #endregion Images
   }
 }

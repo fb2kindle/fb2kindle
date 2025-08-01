@@ -2,7 +2,7 @@
   "profiles": {
     "Fb2Kindle": {
       "commandName": "Project",
-      "commandLineArgs": "*.* -epub"
+      "commandLineArgs": "*.fb2 -optimizeSource"
     }
   }
 }

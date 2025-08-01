@@ -29,18 +29,20 @@ namespace Fb2Kindle {
       // Util.WriteLine("\t-preview: keep generated source files");
       // Util.WriteLine("\t-debug: keep all generated files");
       Util.WriteLine();
-      
       Util.WriteLine("\t-d: delete source file after successful conversion");
       Util.WriteLine("\t-u or -update: update application to the latest version. You can combine it with the `-save` option to enable auto-update on every run");
       Util.WriteLine("\t-s: add sequence and number to the document title");
       Util.WriteLine("\t-c (same as -c1) or -c2: use compression (slow)");
-      Util.WriteLine("\t-ni: no images");
       Util.WriteLine("\t-dc: DropCaps mode");
-      Util.WriteLine("\t-g: grayscale images");
-      Util.WriteLine("\t-jpeg: save images in jpeg");
       Util.WriteLine("\t-ntoc: no table of content");
       Util.WriteLine("\t-nch: no chapters");
-      
+      Util.WriteLine();
+      Util.WriteLine("\t-optimizeSource: optimize images in source file (decrease to 600x800 by default)");
+      Util.WriteLine("\t-optimize: optimize images in target (decrease to 600x800 by default)");
+      Util.WriteLine("\t-ni: no images");
+      Util.WriteLine("\t-g: grayscale images");
+      Util.WriteLine("\t-jpeg: save images in jpeg");
+
       Util.WriteLine();
     }
 
@@ -99,10 +101,24 @@ namespace Fb2Kindle {
             cmdKey.SetValue("", $"{baseCommand} -epub");
           }
         }
+#if DEBUG
+        using (var subKey = key.CreateSubKey(@"shell\preview")) {
+          subKey.SetValue("", "Create preview");
+          using (var cmdKey = subKey.CreateSubKey("command")) {
+            cmdKey.SetValue("", $"{baseCommand} -test -preview -optimize");
+          }
+        }
+#endif
         using (var subKey = key.CreateSubKey(@"shell\convert_mobi")) {
           subKey.SetValue("", "Convert to .mobi");
           using (var cmdKey = subKey.CreateSubKey("command")) {
-            cmdKey.SetValue("", baseCommand);
+            cmdKey.SetValue("", $"{baseCommand} -optimize");
+          }
+        }
+        using (var subKey = key.CreateSubKey(@"shell\optimize")) {
+          subKey.SetValue("", "Optimize source");
+          using (var cmdKey = subKey.CreateSubKey("command")) {
+            cmdKey.SetValue("", $"{baseCommand} -optimizeSource");
           }
         }
       }
@@ -226,6 +242,9 @@ namespace Fb2Kindle {
               case "-ni":
                 options.Config.NoImages = true;
                 break;
+              case "-optimize":
+                options.Config.OptimizeImages = true;
+                break;
               case "-g":
                 options.Config.Grayscaled = true;
                 break;
@@ -283,6 +302,12 @@ namespace Fb2Kindle {
                 break;
               case "-epub":
                 options.Epub = true;
+                break;
+              case "-test":
+                options.Test = true;
+                break;
+              case "-optimizesource":
+                options.OptimizeSource = true;
                 break;
               case "-o":
                 options.DetailedOutput = false;

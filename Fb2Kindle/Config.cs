@@ -17,6 +17,9 @@ namespace Fb2Kindle {
     public bool SkipToc { get; set; }
     public byte CompressionLevel { get; set; }
     public bool AddSequenceInfo { get; set; }
+    public bool OptimizeImages { get; set; }
+    public int OptimizeImagesWidth { get; set; } = 600;
+    public int OptimizeImagesHeight { get; set; } = 800;
     public bool Grayscaled { get; set; }
     public bool Jpeg { get; set; }
 
@@ -36,6 +39,8 @@ namespace Fb2Kindle {
     internal ConverterCleanupMode CleanupMode { get; set; }
     internal bool UseSourceAsTempFolder { get; set; }
     internal bool Epub { get; set; }
+    internal bool Test { get; set; }
+    internal bool OptimizeSource { get; set; }
     internal string MailTo { get; set; }
     internal bool DetailedOutput { get; set; } = true;
     internal string Css { get; set; }

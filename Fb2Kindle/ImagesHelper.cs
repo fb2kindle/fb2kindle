@@ -77,18 +77,38 @@ namespace Fb2Kindle {
       return defaultResult;
     }
 
-    internal static void AutoScaleImage(string coverFilePath, int width = 600, int height = 800) {
+    internal static void AutoScaleImage(string imageFilePath, bool magnify, int width, int height) {
       Image scaledImage = null;
       var imgFormat = ImageFormat.Png;
-      using (var img = Image.FromFile(coverFilePath)) {
-        if (img.Size.Width < width && img.Size.Height < height) {
+      using (var img = Image.FromFile(imageFilePath)) {
+        if (img.Size.Width > width && img.Size.Height > height || magnify && img.Size.Width < width && img.Size.Height < height) {
           imgFormat = GetImageFormatFromMimeType(GetMimeType(img), ImageFormat.Png);
-          scaledImage = ResizeImage(img, 600, 800);
+          scaledImage = ResizeImage(img, width, height);
         }
       }
       if (scaledImage == null) return;
-      scaledImage.Save(coverFilePath, imgFormat);
+      scaledImage.Save(imageFilePath, imgFormat);
       scaledImage.Dispose();
+    }
+
+    internal static bool AutoScaleImage(byte[] imageBytes, ImageFormat format, bool magnify, int width, int height, out byte[] scaledBytes) {
+
+      scaledBytes = imageBytes;
+      using (var img = Image.FromStream(new MemoryStream(imageBytes))) {
+
+        if ((img.Size.Width <= width || img.Size.Height <= height) &&
+            (!magnify || img.Size.Width >= width || img.Size.Height >= height)) {
+          return false;
+        }
+
+        format = GetImageFormatFromMimeType(GetMimeType(img), format);
+        using (var scaledImage = ResizeImage(img, width, height)) {
+          var output = new MemoryStream();
+          scaledImage.Save(output, format);
+          scaledBytes = output.ToArray();
+          return true;
+        }
+      }
     }
 
     internal static double GetScaleFactor(Image original, int width, int height) {
@@ -106,10 +126,10 @@ namespace Fb2Kindle {
       var factor = GetScaleFactor(image, width, height);
       width = (int)Math.Round(image.Width * factor);
       height = (int)Math.Round(image.Height * factor);
-      var destRect = new Rectangle(0, 0, width, height);
-      var destImage = new Bitmap(width, height);
-      destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-      using (var graphics = Graphics.FromImage(destImage)) {
+      var dstRect = new Rectangle(0, 0, width, height);
+      var dstImage = new Bitmap(width, height);
+      dstImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+      using (var graphics = Graphics.FromImage(dstImage)) {
         graphics.CompositingMode = CompositingMode.SourceCopy;
         graphics.CompositingQuality = CompositingQuality.HighQuality;
         graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -118,10 +138,10 @@ namespace Fb2Kindle {
 
         using (var wrapMode = new ImageAttributes()) {
           wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-          graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+          graphics.DrawImage(image, dstRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
         }
       }
-      return destImage;
+      return dstImage;
     }
     
     // private static ImageCodecInfo GetEncoderInfo(string extension) {
