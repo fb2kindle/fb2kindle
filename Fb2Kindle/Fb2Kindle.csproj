@@ -5,7 +5,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <ComVisible>true</ComVisible>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Common\sergiye.snk</AssemblyOriginatorKeyFile>
     <Deterministic>false</Deterministic>
@@ -27,6 +26,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="sergiye.Common" Version="1.*" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Content Include="obfuscar.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Costura.Fody">
       <Version>4.1.0</Version>
       <PrivateAssets>all</PrivateAssets>
@@ -36,5 +42,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Obfuscar">
+      <Version>2.2.48</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PostBuildEvent>$(Obfuscar) obfuscar.xml</PostBuildEvent>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
 </Project>
