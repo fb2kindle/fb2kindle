@@ -81,7 +81,7 @@ namespace Fb2Kindle {
       Image scaledImage = null;
       var imgFormat = ImageFormat.Png;
       using (var img = Image.FromFile(imageFilePath)) {
-        if (img.Size.Width > width && img.Size.Height > height || magnify && img.Size.Width < width && img.Size.Height < height) {
+        if (img.Size.Width > width || img.Size.Height > height || magnify && img.Size.Width < width && img.Size.Height < height) {
           imgFormat = GetImageFormatFromMimeType(GetMimeType(img), ImageFormat.Png);
           scaledImage = ResizeImage(img, width, height);
         }
@@ -95,12 +95,8 @@ namespace Fb2Kindle {
 
       scaledBytes = imageBytes;
       using (var img = Image.FromStream(new MemoryStream(imageBytes))) {
-
-        if ((img.Size.Width <= width || img.Size.Height <= height) &&
-            (!magnify || img.Size.Width >= width || img.Size.Height >= height)) {
-          return false;
-        }
-
+        if (img.Size.Width <= width && img.Size.Height <= height &&
+            (!magnify || img.Size.Width >= width || img.Size.Height >= height)) return false;
         format = GetImageFormatFromMimeType(GetMimeType(img), format);
         using (var scaledImage = ResizeImage(img, width, height)) {
           var output = new MemoryStream();
