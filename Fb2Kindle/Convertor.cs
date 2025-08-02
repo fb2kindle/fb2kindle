@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.IO.Compression;
+using sergiye.Common;
 
 namespace Fb2Kindle {
 
@@ -74,6 +75,9 @@ namespace Fb2Kindle {
         }
         File.WriteAllText(options.TempFolder + @"\book.css", options.Css);
 
+        TaskbarProgressHelper.SetState(TaskbarProgressHelper.TaskbarStates.Normal);
+        TaskbarProgressHelper.SetValue(0, books.Count);
+
         var coverDone = false;
         TocItem rootToc = null;
         var sequenceIndex = 0;
@@ -109,6 +113,9 @@ namespace Fb2Kindle {
               continue;
           }
 
+          TaskbarProgressHelper.SetState(TaskbarProgressHelper.TaskbarStates.Normal);
+          TaskbarProgressHelper.SetValue(idx, books.Count);
+          
           if (options.OptimizeSource) {
             XElement bookRaw;
             using (Stream file = File.OpenRead(books[idx])) {
@@ -169,6 +176,8 @@ namespace Fb2Kindle {
           SaveAsHtmlBook(bookRoot, $"{options.TempFolder}\\{bookFileName}", bookTitle);
           sequenceIndex++;
         }
+
+        TaskbarProgressHelper.SetState(TaskbarProgressHelper.TaskbarStates.NoProgress);
 
         if (sequenceIndex == 0)
            return false;
