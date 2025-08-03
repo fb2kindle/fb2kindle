@@ -1,5 +1,4 @@
-﻿using sergiye.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,16 +12,15 @@ namespace Fb2Kindle {
   internal static class Util {
 
     internal static string GetScriptFromResource(string resourceName) {
-      using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(String.Format("Fb2Kindle.{0}", resourceName))) {
-        if (stream != null)
-          using (var reader = new StreamReader(stream))
-            return reader.ReadToEnd();
-        return null;
+      using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Fb2Kindle.{resourceName}")) {
+        if (stream == null) return null;
+        using (var reader = new StreamReader(stream))
+          return reader.ReadToEnd();
       }
     }
 
     internal static bool GetFileFromResource(string resourceName, string filename) {
-      using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(String.Format("Fb2Kindle.{0}", resourceName))) {
+      using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Fb2Kindle.{resourceName}")) {
         if (stream == null) return false;
         using (Stream file = File.OpenWrite(filename)) {
           var buffer = new byte[8 * 1024];
@@ -32,10 +30,6 @@ namespace Fb2Kindle {
           return true;
         }
       }
-    }
-
-    internal static string GetAppPath() {
-      return Path.GetDirectoryName(Updater.CurrentFileLocation);
     }
 
     internal static void CopyDirectory(string sourceDirName, string destDirName, bool copySubDirs) {
@@ -49,8 +43,8 @@ namespace Fb2Kindle {
       foreach (var file in files)
         file.CopyTo(Path.Combine(destDirName, file.Name), true);
       if (!copySubDirs) return;
-      foreach (var subdir in dirs)
-        CopyDirectory(subdir.FullName, Path.Combine(destDirName, subdir.Name), true);
+      foreach (var subDir in dirs)
+        CopyDirectory(subDir.FullName, Path.Combine(destDirName, subDir.Name), true);
     }
 
     internal static string Value(IEnumerable<XElement> source, string defaultResult = null) {
@@ -65,7 +59,6 @@ namespace Fb2Kindle {
       if (value == null || String.IsNullOrEmpty(value.Trim()))
         return defaultResult;
       return value.Trim();
-
     }
 
     internal static XElement[] RenameTags(XElement root, string tagName, string newName, string className = null, bool clearData = false) {
@@ -116,11 +109,11 @@ namespace Fb2Kindle {
 
       using (var process = new Process()) {
         process.StartInfo = startInfo;
-        process.OutputDataReceived += (sender, e) => {
+        process.OutputDataReceived += (_, e) => {
           if (addToConsole) WriteLine(e.Data);
         };
-        process.ErrorDataReceived += (sender, e) => {
-          if (addToConsole) WriteLine(e.Data, ConsoleColor.Red);
+        process.ErrorDataReceived += (_, e) => {
+          if (addToConsole) WriteLine(e.Data, ErrorColor);
         };
         process.Start();
         process.BeginOutputReadLine();
@@ -129,6 +122,12 @@ namespace Fb2Kindle {
         return process.ExitCode;
       }
     }
+
+    public const ConsoleColor ErrorColor = ConsoleColor.Red;
+    public const ConsoleColor WarningColor = ConsoleColor.DarkYellow;
+    public const ConsoleColor InfoColor = ConsoleColor.White;
+    public const ConsoleColor StatusColor = ConsoleColor.DarkCyan;
+    public const ConsoleColor MessageColor = ConsoleColor.Green;
 
     internal static void WriteLine(string message = null, ConsoleColor? color = null, ConsoleColor? backColor = null) {
       Write(message, color, backColor, true);
@@ -149,10 +148,7 @@ namespace Fb2Kindle {
     internal static string GetValidFileName(string origin) {
       if (string.IsNullOrWhiteSpace(origin))
         throw new ArgumentException("File name can not be empty.");
-      foreach (var c in Path.GetInvalidFileNameChars()) { 
-        origin = origin.Replace(c, '-'); 
-      }
-      return origin;
+      return Path.GetInvalidFileNameChars().Aggregate(origin, (current, c) => current.Replace(c, '-'));
     }
   }
 }

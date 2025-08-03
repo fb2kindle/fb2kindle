@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using sergiye.Common;
 
 namespace Fb2Kindle {
   internal enum ConverterCleanupMode {
@@ -45,7 +47,7 @@ namespace Fb2Kindle {
     internal bool DetailedOutput { get; set; } = true;
     internal string Css { get; set; }
     
-    internal string AppPath { get; } = Util.GetAppPath();
+    internal string AppPath { get; } = Path.GetDirectoryName(Updater.CurrentFileLocation);
     internal string TargetName { get; set; }
     internal string TempFolder { get; set; }
     internal string DocumentTitle { get; set; }

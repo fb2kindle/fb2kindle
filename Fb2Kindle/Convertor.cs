@@ -109,7 +109,7 @@ namespace Fb2Kindle {
             case ".fb2":
               break;
             default:
-              Util.WriteLine("Not supported file format: " + fileExtension, ConsoleColor.Red);
+              Util.WriteLine("Not supported file format: " + fileExtension, Util.ErrorColor);
               continue;
           }
 
@@ -208,7 +208,7 @@ namespace Fb2Kindle {
               Path.GetExtension(tmpBookPath)); 
             File.Move(tmpBookPath,targetFilePath);
             Util.Write("Created: ");
-            Util.WriteLine(targetFilePath, ConsoleColor.DarkCyan);
+            Util.WriteLine(targetFilePath, Util.StatusColor);
           }
         }
     
@@ -219,7 +219,7 @@ namespace Fb2Kindle {
         return result;
       }
       catch (Exception ex) {
-        Util.WriteLine("Unknown error: " + ex.Message, ConsoleColor.Red);
+        Util.WriteLine("Unknown error: " + ex.Message, Util.ErrorColor);
         return false;
       }
       finally {
@@ -242,7 +242,7 @@ namespace Fb2Kindle {
           }
         }
         catch (Exception ex) {
-          Util.WriteLine("Error clearing temp folder: " + ex.Message, ConsoleColor.Red);
+          Util.WriteLine("Error clearing temp folder: " + ex.Message, Util.ErrorColor);
           Util.WriteLine();
         }
       }
@@ -345,7 +345,7 @@ namespace Fb2Kindle {
 
     private void ProcessAllData(XElement book, XElement bookRoot, string postfix, TocItem parent, string bookFileName) {
 
-      Util.Write("FB2 to HTML...", ConsoleColor.White);
+      Util.Write("FB2 to HTML...", Util.InfoColor);
       UpdateLinksInBook(book, bookFileName);
       var bodies = book.Elements("body").ToArray();
       //process other "bodies" (notes)
@@ -403,7 +403,7 @@ namespace Fb2Kindle {
         parent.Add(bodyName, $"{bookFileName}#{part.Key}");
       }
 
-      Util.WriteLine("(OK)", ConsoleColor.Green);
+      Util.WriteLine("(OK)", Util.MessageColor);
     }
 
     private static void SetBigFirstLetters(XElement body) {
@@ -450,7 +450,7 @@ namespace Fb2Kindle {
 
     private string CreateEpub() {
       
-      Util.WriteLine("Creating epub...", ConsoleColor.White);
+      Util.WriteLine("Creating epub...", Util.InfoColor);
 
       var epubDir = Directory.CreateDirectory($"{Path.GetTempPath()}\\{Guid.NewGuid()}");
       var opsDir = epubDir.CreateSubdirectory("OPS");
@@ -470,12 +470,12 @@ namespace Fb2Kindle {
 
     private string CreateMobi() {
 
-      Util.WriteLine("Creating mobi (KF8)...", ConsoleColor.White);
+      Util.WriteLine("Creating mobi (KF8)...", Util.InfoColor);
       var kindleGenPath = $"{options.AppPath}\\{KindleGenName}";
       if (!File.Exists(kindleGenPath)) {
         kindleGenPath = $"{options.TempFolder}\\{KindleGenName}";
         if (!Util.GetFileFromResource(KindleGenName, kindleGenPath)) {
-          Util.WriteLine($"{KindleGenName} not found", ConsoleColor.Red);
+          Util.WriteLine($"{KindleGenName} not found", Util.ErrorColor);
           return null;
         }
       }
@@ -484,7 +484,7 @@ namespace Fb2Kindle {
       var args = $"\"{options.TempFolder}\\content.opf\" -c{options.Config.CompressionLevel} -o \"{outputFileName}.mobi\"";
       var res = Util.StartProcess(kindleGenPath, args, options.DetailedOutput);
       if (res == 2) {
-        Util.WriteLine("Error converting to mobi", ConsoleColor.Red);
+        Util.WriteLine("Error converting to mobi", Util.ErrorColor);
         return null;
       }
       
@@ -510,11 +510,11 @@ namespace Fb2Kindle {
     private bool SendBookByMail(string tmpBookPath) {
       try {
         if (string.IsNullOrWhiteSpace(options.Config.SmtpServer) || options.Config.SmtpPort <= 0) {
-          Util.WriteLine("Mail delivery failed: smtp not configured", ConsoleColor.Red);
+          Util.WriteLine("Mail delivery failed: smtp not configured", Util.ErrorColor);
           return false;
         }
-        // Util.WriteLine($"SMTP: {_currentSettings.SmtpLogin} / {_currentSettings.SmtpServer}:{_currentSettings.SmtpPort}", ConsoleColor.White);
-        Util.Write($"Sending to {options.MailTo}...", ConsoleColor.White);
+        // Util.WriteLine($"SMTP: {_currentSettings.SmtpLogin} / {_currentSettings.SmtpServer}:{_currentSettings.SmtpPort}", Util.InfoColor);
+        Util.Write($"Sending to {options.MailTo}...", Util.InfoColor);
         using (var smtp = new SmtpClient(options.Config.SmtpServer, options.Config.SmtpPort)) {
           smtp.UseDefaultCredentials = false;
           smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -536,11 +536,11 @@ namespace Fb2Kindle {
             }
           }
         }
-        Util.WriteLine("OK", ConsoleColor.Green);
+        Util.WriteLine("OK", Util.MessageColor);
         return true;
       }
       catch (Exception ex) {
-        Util.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        Util.WriteLine($"Error: {ex.Message}", Util.ErrorColor);
       }
       return false;
     }
@@ -657,7 +657,7 @@ namespace Fb2Kindle {
         return book;
       }
       catch (Exception ex) {
-        Util.WriteLine("Unknown file format: " + ex.Message, ConsoleColor.Red);
+        Util.WriteLine("Unknown file format: " + ex.Message, Util.ErrorColor);
         return null;
       }
     }
@@ -723,7 +723,7 @@ namespace Fb2Kindle {
       
       options.DocumentTitle = bookTitle;
       Util.Write("Target document title: ");
-      Util.WriteLine(bookTitle, ConsoleColor.Green);
+      Util.WriteLine(bookTitle, Util.MessageColor);
 
       linkEl.Add(content);
       content = new XElement(dc + "Creator");
@@ -842,7 +842,7 @@ namespace Fb2Kindle {
 
     private bool ExtractImages(XElement book, string workFolder, string imagesPrefix) {
       if (book == null) return true;
-      Util.Write("Extracting images...", ConsoleColor.White);
+      Util.Write("Extracting images...", Util.InfoColor);
       foreach (var binEl in book.Elements("binary")) {
         try {
           var file = GetImageNameWithExt($"{workFolder}\\{imagesPrefix}{binEl.Attribute("id")?.Value}");
@@ -878,21 +878,21 @@ namespace Fb2Kindle {
             }
           }
           catch (Exception ex) {
-            Util.WriteLine("Error compressing image: " + ex.Message, ConsoleColor.Red);
+            Util.WriteLine("Error compressing image: " + ex.Message, Util.ErrorColor);
             File.WriteAllBytes(file, fileBytes);
           }
         }
         catch (Exception ex) {
-          Util.WriteLine(ex.Message, ConsoleColor.Red);
+          Util.WriteLine(ex.Message, Util.ErrorColor);
         }
       }
-      Util.WriteLine("(OK)", ConsoleColor.Green);
+      Util.WriteLine("(OK)", Util.MessageColor);
       return true;
     }
 
     private bool OptimizeImages(XElement book) {
       if (book == null) return false;
-      Util.Write("Optimizing source images...", ConsoleColor.White);
+      Util.Write("Optimizing source images...", Util.InfoColor);
       var hasChanges = false;
       foreach (var binEl in book.Descendants().Where(e => e.Name.LocalName == "binary")) {
         var imgId = binEl.Attribute("id")?.Value;
@@ -907,10 +907,10 @@ namespace Fb2Kindle {
           hasChanges = true;
         }
         catch (Exception ex) {
-          Util.WriteLine($"Error processing image '{imgId}': " + ex.Message, ConsoleColor.Red);
+          Util.WriteLine($"Error processing image '{imgId}': " + ex.Message, Util.ErrorColor);
         }
       }
-       Util.WriteLine("(OK)", ConsoleColor.Green);
+       Util.WriteLine("(OK)", Util.MessageColor);
       return hasChanges;
     }
     

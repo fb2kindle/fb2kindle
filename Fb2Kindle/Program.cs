@@ -49,9 +49,9 @@ namespace Fb2Kindle {
     private static void ShowMainInfo() {
       //Console.Clear();
       Util.Write($"{Updater.ApplicationName} {(Environment.Is64BitProcess ? "x64" : "x32")} version: ");
-      Util.Write(Updater.CurrentVersion, ConsoleColor.DarkCyan);
+      Util.Write(Updater.CurrentVersion, Util.StatusColor);
 #if DEBUG
-      Util.Write(" (DEBUG version) ", ConsoleColor.DarkYellow);
+      Util.Write(" (DEBUG version) ", Util.WarningColor);
 #endif
       Util.WriteLine();
     }
@@ -136,7 +136,7 @@ namespace Fb2Kindle {
         AddSubItems(key, $"\"{exePath}\" \"%1\\*.fb2\" -r -j");
       }
 
-      Util.WriteLine("Context menus successfully added.", ConsoleColor.Green);
+      Util.WriteLine("Context menus successfully added.", Util.MessageColor);
     }
 
     static void Unregister(bool silent = false) {
@@ -154,11 +154,11 @@ namespace Fb2Kindle {
         Registry.ClassesRoot.DeleteSubKeyTree(@"Directory\shell\Fb2Kindle", false);
 
         if (!silent)
-          Util.WriteLine("Context menus successfully removed.", ConsoleColor.Green);
+          Util.WriteLine("Context menus successfully removed.", Util.MessageColor);
       }
       catch (Exception ex) {
         if (!silent)
-          Util.WriteLine("Error while removing context menus: " + ex.Message, ConsoleColor.Red);
+          Util.WriteLine("Error while removing context menus: " + ex.Message, Util.ErrorColor);
       }
     }
 
@@ -175,24 +175,24 @@ namespace Fb2Kindle {
       try {
         ShowMainInfo();
 
-        var appPath = Util.GetAppPath();
         var settingsFile = Path.ChangeExtension(Updater.CurrentFileLocation, ".json");
         options = new AppOptions {
           Config = JsonSerializeHelper.ReadJsonFile<Config>(settingsFile) ?? new Config()
         };
+        var appPath = options.AppPath;
         //var settingsFile = Path.ChangeExtension(Assembly.GetExecutingAssembly().Location, ".xml");
         //var currentSettings = XmlSerializerHelper.DeserializeFile<DefaultOptions>(settingsFile) ?? new DefaultOptions();
         var bookPath = string.Empty;
 
         if (args.Length == 0) {
           ShowHelpText();
-          Util.WriteLine("\nDo you want to integrate this app with Windows Explorer (add context menu)?", ConsoleColor.DarkCyan);
-          Util.WriteLine("Press Enter to confirm, or any other key to skip...", ConsoleColor.DarkYellow);
+          Util.WriteLine("\nDo you want to integrate this app with Windows Explorer (add context menu)?", Util.StatusColor);
+          Util.WriteLine("Press Enter to confirm, or any other key to skip...", Util.WarningColor);
           if (Console.ReadKey().Key == ConsoleKey.Enter) {
             Register(Updater.CurrentFileLocation);
           }
-          Util.WriteLine("\nDo you want to process all local files recursively using default settings?", ConsoleColor.DarkCyan);
-          Util.WriteLine("Press Enter to continue, or any other key to exit...", ConsoleColor.DarkYellow);
+          Util.WriteLine("\nDo you want to process all local files recursively using default settings?", Util.StatusColor);
+          Util.WriteLine("Press Enter to continue, or any other key to exit...", Util.WarningColor);
           if (Console.ReadKey().Key != ConsoleKey.Enter)
             return;
           wait = true;
@@ -278,12 +278,12 @@ namespace Fb2Kindle {
                   if (!File.Exists(cssFile))
                     cssFile = appPath + "\\" + cssFile;
                   if (!File.Exists(cssFile)) {
-                    Util.WriteLine("css styles file not found", ConsoleColor.Red);
+                    Util.WriteLine("css styles file not found", Util.ErrorColor);
                     return;
                   }
                   options.Css = File.ReadAllText(cssFile, Encoding.UTF8);
                   if (string.IsNullOrEmpty(options.Css)) {
-                    Util.WriteLine("css styles file is empty", ConsoleColor.Red);
+                    Util.WriteLine("css styles file is empty", Util.ErrorColor);
                     return;
                   }
                   j++;
@@ -296,10 +296,12 @@ namespace Fb2Kindle {
                 options.CleanupMode = ConverterCleanupMode.Partial;
                 options.UseSourceAsTempFolder = true;
                 break;
+#if DEBUG
               case "-debug":
                 options.CleanupMode = ConverterCleanupMode.No;
                 options.UseSourceAsTempFolder = true;
                 break;
+#endif
               case "-epub":
                 options.Epub = true;
                 break;
@@ -343,7 +345,7 @@ namespace Fb2Kindle {
           }
         }
         if (string.IsNullOrEmpty(bookPath)) {
-          Util.WriteLine("No input file", ConsoleColor.Red);
+          Util.WriteLine("No input file", Util.ErrorColor);
           return;
         }
         if (save) options.Config.ToJsonFile(settingsFile);
@@ -359,30 +361,30 @@ namespace Fb2Kindle {
         processedFiles = ProcessFolder(conv, workPath, bookPath, recursive, join);
       }
       catch (Exception ex) {
-        Util.WriteLine(ex.Message, ConsoleColor.Red);
+        Util.WriteLine(ex.Message, Util.ErrorColor);
       }
       finally {
         if (processedFiles > 0) {
           var timeWasted = DateTime.Now - startedTime;
-          Util.Write($"\nProcessed ", ConsoleColor.White);
-          Util.Write($"{processedFiles}", ConsoleColor.Green);
-          Util.Write(" files in: ", ConsoleColor.White);
-          Util.WriteLine($"{timeWasted:G}", ConsoleColor.Green);
+          Util.Write($"\nProcessed ", Util.InfoColor);
+          Util.Write($"{processedFiles}", Util.MessageColor);
+          Util.Write(" files in: ", Util.InfoColor);
+          Util.WriteLine($"{timeWasted:G}", Util.MessageColor);
         }
         else {
-          Util.WriteLine("\nNo files processed", ConsoleColor.DarkYellow);
+          Util.WriteLine("\nNo files processed", Util.WarningColor);
         }
 
         if (wait) {
-          Util.WriteLine("\nPress any key to continue...", ConsoleColor.White);
+          Util.WriteLine("\nPress any key to continue...", Util.InfoColor);
           Console.ReadKey();
         }
       }
         
       if (options?.Config != null && options.Config.CheckUpdates) {
         Updater.Subscribe(
-          (message, isError) => { Console.WriteLine(message); },
-          (message) => { Console.WriteLine(message); return true; }
+          (message, isError) => { Util.WriteLine(message, isError ? Util.ErrorColor : Util.InfoColor); },
+          message => { Util.WriteLine(message, Util.StatusColor); return true; }
         );
         Console.WriteLine("\nChecking for updates...");
         Updater.CheckForUpdates(false);
