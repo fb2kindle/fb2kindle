@@ -37,8 +37,8 @@ namespace Fb2Kindle {
       Util.WriteLine("\t-ntoc: no table of content");
       Util.WriteLine("\t-nch: no chapters");
       Util.WriteLine();
-      Util.WriteLine("\t-optimizeSource: optimize images in source file (decrease to 600x800 by default)");
-      Util.WriteLine("\t-optimize: optimize images in target (decrease to 600x800 by default)");
+      Util.WriteLine("\t-optimizeSource: optimize images in source file (decrease to 824x1200 by default)");
+      Util.WriteLine("\t-optimize: optimize images in target (decrease to 824x1200 by default)");
       Util.WriteLine("\t-ni: no images");
       Util.WriteLine("\t-g: grayscale images");
       Util.WriteLine("\t-jpeg: save images in jpeg");
