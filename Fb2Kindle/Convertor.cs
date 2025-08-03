@@ -144,7 +144,7 @@ namespace Fb2Kindle {
           if (ProcessImages(book, $"Images\\{bookPostfix}", coverDone)) {
             var imgSrc = Util.AttributeValue(book.Elements("description").Elements("title-info").Elements("coverpage").Elements("div").Elements("img"), "src");
             if (!string.IsNullOrEmpty(imgSrc)) {
-              ImagesHelper.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc), true, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
+              ImageExtensions.AutoScaleImage(Path.Combine(options.TempFolder, imgSrc), true, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
               if (!coverDone) {
                 opfFile.Elements("metadata").First().Elements("x-metadata").First().Add(new XElement("EmbeddedCover", imgSrc));
                 AddGuideItem("Cover", imgSrc, "other.ms-coverimage-standard");
@@ -846,7 +846,7 @@ namespace Fb2Kindle {
       foreach (var binEl in book.Elements("binary")) {
         try {
           var file = GetImageNameWithExt($"{workFolder}\\{imagesPrefix}{binEl.Attribute("id")?.Value}");
-          var format = ImagesHelper.GetImageFormatFromMimeType(binEl.Attribute("content-type")?.Value, options.Config.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png);
+          var format = ImageExtensions.GetImageFormatFromMimeType(binEl.Attribute("content-type")?.Value, options.Config.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png);
           //todo: we can get format from img.RawFormat
           var fileBytes = Convert.FromBase64String(binEl.Value);
           try {
@@ -867,12 +867,12 @@ namespace Fb2Kindle {
             }
 
             if (options.Config.OptimizeImages)
-              ImagesHelper.AutoScaleImage(file, magnify: false, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
+              ImageExtensions.AutoScaleImage(file, magnify: false, options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight);
 
             if (options.Config.Grayscaled) {
               Image gsImage;
               using (var img = Image.FromFile(file)) {
-                gsImage = ImagesHelper.GrayScale(img, true, format);
+                gsImage = img.Grayscale(true, format);
               }
               gsImage.Save(file, format);
             }
@@ -897,10 +897,10 @@ namespace Fb2Kindle {
       foreach (var binEl in book.Descendants().Where(e => e.Name.LocalName == "binary")) {
         var imgId = binEl.Attribute("id")?.Value;
         try {
-          var format = ImagesHelper.GetImageFormatFromMimeType(binEl.Attribute("content-type")?.Value, options.Config.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png);
+          var format = ImageExtensions.GetImageFormatFromMimeType(binEl.Attribute("content-type")?.Value, options.Config.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png);
           //todo: we can get format from img.RawFormat
           var imageBytes = Convert.FromBase64String(binEl.Value);
-          if (!ImagesHelper.AutoScaleImage(imageBytes, format, false,
+          if (!ImageExtensions.AutoScaleImage(imageBytes, format, false,
                 options.Config.OptimizeImagesWidth, options.Config.OptimizeImagesHeight,
                 out var scaledBytes)) continue;
           binEl.Value = Convert.ToBase64String(scaledBytes);
