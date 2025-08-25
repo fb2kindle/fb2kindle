@@ -23,7 +23,7 @@
     <Content Include="Kindle.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="sergiye.Common" Version="1.*" />
+    <PackageReference Include="SergiyE.Common" Version="1.*" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <Content Include="obfuscar.xml">
