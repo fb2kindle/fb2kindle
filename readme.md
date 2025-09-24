@@ -90,7 +90,11 @@ also you can check cmd script examples in archive here [other/scripts.7z](https:
 The fb2kindle team welcomes feedback and contributions!<br/>
 You can check if it works properly on your PC. If you notice any inaccuracies, please send us a pull request. If you have any suggestions or improvements, don't hesitate to create an issue.
 
-Also, don't forget to star the repository to help other people find it.
+Also, don't forget to ★ star ★ the repository to help other people find it.
+
+[![Stargazers](https://reporoster.com/stars/fb2kindle/fb2kindle)](https://star-history.com/#fb2kindle/fb2kindle&Date)
+
+<!-- [![Forkers](https://reporoster.com/forks/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/network/members) -->
 
 ## Donate!
 Every [cup of coffee](https://patreon.com/SergiyE) you donate will help this app become better and let me know that this project is in demand.

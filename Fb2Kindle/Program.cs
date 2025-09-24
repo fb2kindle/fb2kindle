@@ -387,7 +387,7 @@ namespace Fb2Kindle {
           message => { Util.WriteLine(message, Util.StatusColor); return true; }
         );
         Console.WriteLine("\nChecking for updates...");
-        Updater.CheckForUpdates(false);
+        Updater.CheckForUpdates(Updater.CheckUpdatesMode.AutoUpdate);
       }
     }
 
