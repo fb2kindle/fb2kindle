@@ -1,8 +1,8 @@
 # Fb2Kindle
 
-[![Release](https://img.shields.io/github/v/release/sergiye/fb2kindle)](https://github.com/sergiye/fb2kindle/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/sergiye/fb2kindle/total?color=ff4f42)](https://sergiye.github.io/github-release-stats/?username=sergiye&repository=fb2kindle&page=1&per_page=100)
-![Last commit](https://img.shields.io/github/last-commit/sergiye/fb2kindle?color=00AD00)
+[![Release](https://img.shields.io/github/v/release/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/fb2kindle/fb2kindle/total?color=ff4f42)](https://sergiye.github.io/github-release-stats/?username=fb2kindle&repository=fb2kindle&page=1&per_page=100)
+![Last commit](https://img.shields.io/github/last-commit/fb2kindle/fb2kindle?color=00AD00)
 
 *Fb2Kindle is a free, portable Windows tool that converts FictionBook (`.fb2`) e-books into Amazon Kindle formats (`.mobi` and `.epub`).*
 
@@ -14,7 +14,7 @@ It converts single books or whole folders, can join a book series into one file,
 
 Fb2Kindle adds a menu to Windows Explorer, so you can convert a book or a whole folder with a right click:
 
-[<img src="https://github.com/sergiye/fb2kindle/raw/master/preview.png" alt="preview"/>](https://github.com/sergiye/fb2kindle/raw/master/preview.png)
+[<img src="https://github.com/fb2kindle/fb2kindle/raw/master/preview.png" alt="preview"/>](https://github.com/fb2kindle/fb2kindle/raw/master/preview.png)
 
 ## Features
 
@@ -53,7 +53,7 @@ Fb2Kindle adds a menu to Windows Explorer, so you can convert a book or a whole 
 
 ## Download
 
-Download `Fb2Kindle.exe` from the [latest release](https://github.com/sergiye/fb2kindle/releases/latest). All versions are on the [releases](https://github.com/sergiye/fb2kindle/releases) page.
+Download `Fb2Kindle.exe` from the [latest release](https://github.com/fb2kindle/fb2kindle/releases/latest). All versions are on the [releases](https://github.com/fb2kindle/fb2kindle/releases) page.
 
 ## How To Use
 
@@ -171,7 +171,7 @@ The password is stored in `Fb2Kindle.json` as plain text. Use an app password ra
 
 ### 7. Custom styles and fonts
 
-The built-in stylesheet is [Fb2Kindle/Fb2Kindle.css](https://github.com/sergiye/fb2kindle/raw/master/Fb2Kindle/Fb2Kindle.css). To change the look of all your books, copy it next to the app as `Fb2Kindle.css` and edit it. It is then used automatically instead of the built-in one. To change the look of a single conversion, pass a stylesheet with `-css`.
+The built-in stylesheet is [Fb2Kindle/Fb2Kindle.css](https://github.com/fb2kindle/fb2kindle/raw/master/Fb2Kindle/Fb2Kindle.css). To change the look of all your books, copy it next to the app as `Fb2Kindle.css` and edit it. It is then used automatically instead of the built-in one. To change the look of a single conversion, pass a stylesheet with `-css`.
 
 To embed fonts, put them into a `fonts` folder next to the app and reference them in the CSS as `src: url("fonts/MyFont.ttf")`.
 
@@ -195,19 +195,19 @@ Join a series, send it to your Kindle, and save these settings (including auto-u
 
     Fb2Kindle.exe "C:\Series\*.fb2" -j -mailto your.name@kindle.com -update -save
 
-More ready-to-use `.cmd` scripts are in [other/scripts.7z](https://github.com/sergiye/fb2kindle/raw/master/other/scripts.7z).
+More ready-to-use `.cmd` scripts are in [other/scripts.7z](https://github.com/fb2kindle/fb2kindle/raw/master/other/scripts.7z).
 
 ----
 
 ## How can I help improve it?
 
 Feedback is always welcome!<br/>
-Try the app with your books. If something is converted incorrectly, please [open an issue](https://github.com/sergiye/fb2kindle/issues) and attach the `.fb2` file if you can. Pull requests with fixes and improvements are welcome too.
+Try the app with your books. If something is converted incorrectly, please [open an issue](https://github.com/fb2kindle/fb2kindle/issues) and attach the `.fb2` file if you can. Pull requests with fixes and improvements are welcome too.
 
 Also, don't forget to ★ star ★ the repository to help other people find it.
 
-<!-- [![Stargazers](https://reporoster.com/stars/sergiye/fb2kindle)](https://star-history.com/#sergiye/fb2kindle&Date) -->
-<!-- [![Forkers](https://reporoster.com/forks/sergiye/fb2kindle)](https://github.com/sergiye/fb2kindle/network/members) -->
+<!-- [![Stargazers](https://reporoster.com/stars/fb2kindle/fb2kindle)](https://star-history.com/#fb2kindle/fb2kindle&Date) -->
+<!-- [![Forkers](https://reporoster.com/forks/fb2kindle/fb2kindle)](https://github.com/fb2kindle/fb2kindle/network/members) -->
 
 ## Donate!
 
@@ -217,7 +217,7 @@ Every [cup of coffee](https://patreon.com/SergiyE) you donate helps this app get
 
 Fb2Kindle is free to use for **personal, home and other non-commercial purposes only**.
 
-Any commercial use is not allowed without prior written permission from the author. This includes use inside a company or organization, bundling it with or into commercial products or services, and selling it or charging for access to it. For commercial licensing, please contact the author through [GitHub issues](https://github.com/sergiye/fb2kindle/issues).
+Any commercial use is not allowed without prior written permission from the author. This includes use inside a company or organization, bundling it with or into commercial products or services, and selling it or charging for access to it. For commercial licensing, please contact the author through [GitHub issues](https://github.com/fb2kindle/fb2kindle/issues).
 
 You may share unmodified copies of the program free of charge, as long as they are used under the same terms.
 
